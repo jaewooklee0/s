@@ -1,4 +1,4 @@
-let balance = 1000; // Starting balance
+let balance = 1000; // Initial balance
 
 // Function to add funds in increments of 1000
 function addFunds() {
@@ -7,7 +7,12 @@ function addFunds() {
   localStorage.setItem('balance', balance); // Store balance in localStorage
 }
 
-// On load, update balance from localStorage
+// Function to navigate to Blackjack page
+function goToBlackjack() {
+  window.location.href = 'blackjack.html'; // Navigate to Blackjack page
+}
+
+// On page load, update balance from localStorage
 window.onload = function () {
   const storedBalance = localStorage.getItem('balance');
   if (storedBalance) {
@@ -15,3 +20,4 @@ window.onload = function () {
     document.getElementById("balance").innerText = `$${balance.toFixed(2)}`;
   }
 };
+

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Casino</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="scripts.js" defer></script> <!-- Include JavaScript file -->
+  <script src="scripts.js" defer></script> <!-- Add main JS -->
 </head>
 <body>
   <header class="casino-header">
@@ -13,26 +13,20 @@
     <div class="balance-container">
       <div class="balance-info">
         <span class="balance-icon">🟡</span>
-        <span id="balance">$0.00</span> <!-- Add an ID for JS to manipulate balance -->
+        <span id="balance">$0.00</span> <!-- Display dynamic balance -->
       </div>
-      <button class="add-funds-btn" onclick="addFunds()">Add</button> <!-- Call addFunds() -->
+      <button class="add-funds-btn" onclick="addFunds()">Add</button> <!-- Add funds button -->
     </div>
   </header>
 
   <main class="main-content">
-    <nav class="sidebar">
-      <ul>
-        <li><a href="blackjack.html">Blackjack</a></li>
-        <li><a href="#">Plinko</a></li>
-        <li><a href="#">Roulette</a></li>
-      </ul>
-    </nav>
+    <nav class="sidebar"></nav>
 
     <section class="games-container">
       <div class="featured-game"></div>
       <h2 class="games-title">Games</h2>
       <div class="game-grid">
-        <article class="game-card" id="blackjack-game">BLACKJACK</article>
+        <article class="game-card" id="blackjack-game" onclick="goToBlackjack()">BLACKJACK</article> <!-- On click, navigate -->
         <article class="game-card">PLINKO</article>
         <article class="game-card">ROULETTE</article>
       </div>

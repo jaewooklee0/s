@@ -1,3 +1,4 @@
+/* Global Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -10,57 +11,62 @@
     overflow-y: scroll;
   }
   
+  h1, h2, h3 {
+    font-family: 'Oleo Script', cursive;
+  }
+  
+  /* Header */
   .casino-header {
     background-color: rgba(36, 41, 52, 0.96);
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     display: flex;
-    height: 70px;
-    width: 100%;
-    align-items: center;
+    height: 80px;
     justify-content: space-between;
-    padding: 10px 30px;
-    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 48px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   }
   
   .casino-logo {
-    color: #fff;
-    font: 400 40px 'Oleo Script', cursive;
+    font-size: 40px;
+    color: white;
   }
   
   .balance-container {
-    border-radius: 10px;
-    background-color: #20202b;
     display: flex;
-    padding: 10px 25px;
-    gap: 10px;
-    font-family: 'Istok Web', sans-serif;
-    color: #fff;
+    align-items: center;
+    gap: 20px;
+    background-color: #20202b;
+    padding: 10px 20px;
+    border-radius: 10px;
   }
   
   .balance-info {
     display: flex;
     gap: 10px;
     font-size: 24px;
-  }
-  
-  .balance-icon {
-    font-size: 26px;
+    color: white;
   }
   
   .add-funds-btn {
-    border-radius: 10px;
     background-color: #9a52ff;
-    font-size: 18px;
-    padding: 10px 25px;
-    border: 1px solid #000;
     color: white;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
     cursor: pointer;
   }
   
+  .add-funds-btn:hover {
+    background-color: #8a46e5;
+  }
+  
+  /* Main Content */
   .main-content {
     display: flex;
-    width: 100%;
     margin-top: 20px;
+    width: 100%;
   }
   
   .sidebar {
@@ -75,6 +81,15 @@
     background-color: #242934;
     width: 82%;
     padding: 28px 20px;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .featured-game {
+    border-radius: 30px;
+    background-color: #d9d9d9;
+    height: 200px;
+    width: 100%;
   }
   
   .games-title {
@@ -99,29 +114,115 @@
     width: 22%;
     height: 350px;
     text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s;
   }
   
+  .game-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  @media (max-width: 991px) {
+    .casino-header {
+      padding: 10px 20px;
+    }
+  
+    .casino-logo {
+      font-size: 35px;
+    }
+  
+    .balance-container {
+      font-size: 18px;
+    }
+  
+    .main-content {
+      flex-direction: column;
+    }
+  
+    .sidebar,
+    .games-container {
+      width: 100%;
+    }
+  
+    .games-container {
+      padding: 20px 10px 60px;
+    }
+  
+    .game-grid {
+      flex-direction: column;
+    }
+  
+    .game-card {
+      width: 100%;
+      padding: 20px;
+      height: auto;
+    }
+  }
+  
+  /* Blackjack Game Styles */
   .blackjack-container {
-    background-color: #242934;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
+    padding: 40px;
+    color: white;
+    background-color: #1b1e26;
+    min-height: 100vh;
   }
   
-  #game-area {
-    margin-top: 20px;
+  .blackjack-container h2, .blackjack-container h3 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  input[type="number"] {
+    width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
   }
   
   button {
     background-color: #9a52ff;
-    color: #fff;
-    border: none;
+    color: white;
+    font-size: 18px;
     padding: 10px 20px;
     border-radius: 5px;
+    border: none;
     cursor: pointer;
   }
   
   button:hover {
-    background-color: #6e3fcc;
+    background-color: #8a46e5;
+  }
+  
+  #game-area {
+    margin-top: 40px;
+  }
+  
+  #dealer-hand, #player-hand {
+    padding: 20px;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    font-size: 20px;
+    color: black;
+    margin-bottom: 20px;
+  }
+  
+  #result {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 30px;
+    color: #ff0000;
+  }
+  
+  /* Back to casino button */
+  .blackjack-container button:last-child {
+    margin-top: 40px;
+    background-color: #ff5e5e;
+  }
+  
+  .blackjack-container button:last-child:hover {
+    background-color: #e55555;
   }
   
