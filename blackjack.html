@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackjack Game</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="blackjack.js" defer></script> <!-- Link to Blackjack script -->
+</head>
+<body>
+  <header class="casino-header">
+    <h1 class="casino-logo">Blackjack</h1>
+    <div class="balance-container">
+      <div class="balance-info">
+        <span class="balance-icon">🟡</span>
+        <span id="balance">$0.00</span> <!-- Balance display -->
+      </div>
+    </div>
+  </header>
+
+  <main class="blackjack-container">
+    <h2>Place Your Bet</h2>
+    <input type="number" id="bet-amount" placeholder="Enter bet amount" min="1">
+    <button onclick="placeBet()">Place Bet</button>
+
+    <div id="game-area">
+      <h3>Dealer's Hand</h3>
+      <div id="dealer-hand"></div>
+
+      <h3>Your Hand</h3>
+      <div id="player-hand"></div>
+
+      <button onclick="hit()">Hit</button>
+      <button onclick="stand()">Stand</button>
+
+      <h3 id="result"></h3>
+    </div>
+
+    <button onclick="goBack()">Back to Casino</button>
+  </main>
+</body>
+</html>
