@@ -1,8 +1,11 @@
 let deck = [];
 let playerHand = [];
+let splitHand = []; // For splitting
 let dealerHand = [];
 let playerBalance = parseFloat(localStorage.getItem('balance')) || 1000;
 let currentBet = 0;
+let isSplit = false; // Flag to check if hand is split
+let doubledDown = false; // Flag to check if double down is used
 
 // Update balance on load
 document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
@@ -91,8 +94,15 @@ function updateHands() {
   const dealerHandEl = document.getElementById('dealer-hand');
   const playerHandEl = document.getElementById('player-hand');
   
-  dealerHandEl.innerText = dealerHand.map(card => `${card.value}${card.suit}`).join(' ');
+  // Show only the first dealer card, the second is hidden until player stands
+  dealerHandEl.innerText = `${dealerHand[0].value}${dealerHand[0].suit} [HIDDEN]`;
   playerHandEl.innerText = playerHand.map(card => `${card.value}${card.suit}`).join(' ');
+}
+
+// Function to reveal dealer's hidden card
+function revealDealerHand() {
+  const dealerHandEl = document.getElementById('dealer-hand');
+  dealerHandEl.innerText = dealerHand.map(card => `${card.value}${card.suit}`).join(' ');
 }
 
 // Function to check for immediate blackjack
@@ -103,6 +113,7 @@ function checkForBlackjack() {
   if (playerValue === 21) {
     endGame('Blackjack! You win.');
   } else if (dealerValue === 21) {
+    revealDealerHand(); // Reveal the dealer's hidden card
     endGame('Dealer has Blackjack! You lose.');
   }
 }
@@ -121,15 +132,46 @@ function hit() {
 
 // Function for standing
 function stand() {
-  let dealerValue = calculateHandValue(dealerHand);
-  
-  while (dealerValue < 17) {
-    dealerHand.push(drawCard());
-    dealerValue = calculateHandValue(dealerHand);
+    revealDealerHand(); // Reveal dealer's hidden card first
+
+    let dealerValue = calculateHandValue(dealerHand);
+    
+    // Dealer must hit if their hand value is less than 17
+    while (dealerValue < 17) {
+        dealerHand.push(drawCard());
+        dealerValue = calculateHandValue(dealerHand);
+    }
+    
+    updateHands();
+    determineWinner(); // Determine winner after dealer's final hand is set
+}
+
+// Function for doubling down
+function doubleDown() {
+  if (!doubledDown && playerHand.length === 2) {
+    currentBet *= 2;
+    playerBalance -= currentBet / 2;
+    localStorage.setItem('balance', playerBalance);
+    document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
+    
+    hit(); // Receive one more card
+    stand(); // Then stand automatically
+    doubledDown = true;
   }
-  
-  updateHands();
-  determineWinner();
+}
+
+// Function to split the hand
+function split() {
+  if (playerHand.length === 2 && playerHand[0].value === playerHand[1].value && !isSplit) {
+    splitHand.push(playerHand.pop()); // Move one card to split hand
+    isSplit = true;
+    currentBet *= 2;
+    playerBalance -= currentBet / 2;
+    localStorage.setItem('balance', playerBalance);
+    document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
+    
+    updateHands();
+  }
 }
 
 // Function to determine the winner
