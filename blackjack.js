@@ -113,12 +113,29 @@ function determineWinner() {
 
 // Function to handle double down (implement if desired)
 function doubleDown() {
-    // Logic for doubling down (optional)
+  if (balance >= betAmount) { // Check if there are enough funds to double down
+      balance -= betAmount; // Deduct the bet amount from balance
+      betAmount *= 2; // Double the bet
+      document.getElementById('balance').innerText = `$${balance}`;
+      playerHand.push(dealCard()); // Give one more card to the player
+      renderHands(); // Update the UI with the new hand
+      checkBust(); // Check if the player has busted after doubling down
+      if (!checkBust()) { // If player has not busted, proceed to dealer's turn
+          revealDealerHand();
+          playDealerTurn(); // Dealer plays their turn
+      }
+  } else {
+      alert("You do not have enough balance to double down.");
+  }
 }
 
 // Function to go back to casino (you can implement this based on your layout)
 function goBack() {
-    // Logic to navigate back to the casino (not implemented here)
+  window.location.href = 'index.html'; // Back to the main casino page
+    document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
+    localStorage.setItem('balance', playerBalance); // Update balance
+    document.getElementById("result").innerText = resultMessage;
+    resetGame(); // Reset for next round
 }
 
 // Call the startGame function at the beginning to set up the game
