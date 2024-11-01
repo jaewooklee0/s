@@ -1,8 +1,14 @@
 let dealerHand = []; // Array to store dealer's hand
 let playerHand = []; // Array to store player's hand
-let balance = 1000; // Initial balance
+let balance = parseFloat(localStorage.getItem('balance')) || 1000; // Initialize balance from localStorage
 let betAmount = 0; // Amount to bet
 let dealerHidden = true; // Flag to track if dealer's second card is hidden
+
+// Function to update balance and store in localStorage
+function updateBalance() {
+    document.getElementById('balance').innerText = `$${balance.toFixed(2)}`;
+    localStorage.setItem('balance', balance); // Store balance in localStorage
+}
 
 // Function to place a bet
 function placeBet() {
@@ -11,7 +17,7 @@ function placeBet() {
 
     if (betAmount > 0 && betAmount <= balance) {
         balance -= betAmount;
-        document.getElementById('balance').innerText = `$${balance}`;
+        updateBalance(); // Update balance display and storage
         startGame(); // Start the game after placing the bet
     } else {
         alert("Please enter a valid bet amount.");
@@ -131,7 +137,7 @@ function determineWinner() {
         balance += betAmount; // Return the bet amount
     }
 
-    document.getElementById('balance').innerText = `$${balance}`; // Update balance on UI
+    updateBalance(); // Update balance on UI and in localStorage
 }
 
 // Function to handle double down
@@ -139,7 +145,7 @@ function doubleDown() {
     if (balance >= betAmount) { // Check if there are enough funds to double down
         balance -= betAmount; // Deduct the bet amount from balance
         betAmount *= 2; // Double the bet
-        document.getElementById('balance').innerText = `$${balance}`;
+        updateBalance(); // Update balance after doubling down
         playerHand.push(dealCard()); // Give one more card to the player
         renderHands(); // Update the UI with the new hand
         checkBust(); // Check if the player has busted after doubling down
@@ -159,4 +165,7 @@ function goBack() {
 }
 
 // Call the startGame function at the beginning to set up the game
-startGame();
+window.onload = function() {
+    updateBalance(); // Initialize the balance display on page load
+    startGame(); // Start the game
+};
