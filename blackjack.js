@@ -1,193 +1,125 @@
-let deck = [];
-let playerHand = [];
-let dealerHand = [];
-let playerBalance = parseFloat(localStorage.getItem('balance')) || 1000;
-let currentBet = 0;
-let doubledDown = false; // Flag to check if double down is used
-
-// Update balance on load
-document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
+let dealerHand = []; // Array to store dealer's hand
+let playerHand = []; // Array to store player's hand
+let balance = 1000; // Initial balance
+let betAmount = 0; // Amount to bet
+let dealerHidden = true; // Flag to track if dealer's second card is hidden
 
 // Function to place a bet
 function placeBet() {
-    const betAmount = parseInt(document.getElementById('bet-amount').value);
-    
-    if (betAmount > playerBalance || betAmount <= 0) {
-        alert("Invalid bet amount.");
-        return;
+    const betInput = document.getElementById('bet-amount');
+    betAmount = parseInt(betInput.value);
+
+    if (betAmount > 0 && betAmount <= balance) {
+        balance -= betAmount;
+        document.getElementById('balance').innerText = `$${balance}`;
+        startGame(); // Start the game after placing the bet
+    } else {
+        alert("Please enter a valid bet amount.");
     }
-    
-    currentBet = betAmount;
-    playerBalance -= currentBet;
-    document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
-    localStorage.setItem('balance', playerBalance); // Update balance
-    
-    startGame();
 }
 
-// Function to start a new Blackjack game
+// Function to start the game
 function startGame() {
-    deck = createDeck();
-    playerHand = [drawCard(), drawCard()];
-    dealerHand = [drawCard(), drawCard()];
-
-    updateHands();
-    checkForBlackjack();
+    dealerHand = [];
+    playerHand = [];
+    dealerHidden = true; // Reset the dealer's hidden state
+    dealInitialCards(); // Deal initial cards
+    renderHands(); // Render hands on the UI
 }
 
-// Function to create and shuffle a new deck
-function createDeck() {
-    let suits = ['♠', '♥', '♦', '♣'];
-    let values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    let newDeck = [];
-    
-    for (let suit of suits) {
-        for (let value of values) {
-            newDeck.push({ value, suit });
-        }
-    }
-    
-    return shuffleDeck(newDeck);
+// Function to deal initial cards
+function dealInitialCards() {
+    dealerHand.push(dealCard(), dealCard());
+    playerHand.push(dealCard(), dealCard());
 }
 
-function shuffleDeck(deck) {
-    for (let i = deck.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-    return deck;
+// Simulated card dealing function (you can customize this)
+function dealCard() {
+    // Return a random card value (1-11 for simplicity, assuming Ace is 11)
+    return Math.floor(Math.random() * 10) + 1; // Replace with real card logic
 }
 
-// Function to draw a card from the deck
-function drawCard() {
-    return deck.pop();
+// Function to render hands
+function renderHands() {
+    // Show dealer's first card and a placeholder for the hidden card
+    document.getElementById('dealer-hand').innerText = dealerHidden 
+        ? dealerHand[0] + ', ???' 
+        : dealerHand.join(', '); // Show both cards if not hidden
+
+    document.getElementById('player-hand').innerText = playerHand.join(', ');
 }
 
-// Function to calculate the hand value
-function calculateHandValue(hand) {
-    let value = 0;
-    let aces = 0;
-    
-    hand.forEach(card => {
-        if (card.value === 'A') {
-            value += 11;
-            aces++;
-        } else if (['K', 'Q', 'J'].includes(card.value)) {
-            value += 10;
-        } else {
-            value += parseInt(card.value);
-        }
-    });
-
-    while (value > 21 && aces) {
-        value -= 10;
-        aces--;
-    }
-    
-    return value;
-}
-
-// Function to update hands
-function updateHands() {
-    const dealerHandEl = document.getElementById('dealer-hand');
-    const playerHandEl = document.getElementById('player-hand');
-    
-    // Show only the first dealer card, the second is hidden until player stands
-    dealerHandEl.innerText = `${dealerHand[0].value}${dealerHand[0].suit} [HIDDEN]`;
-    playerHandEl.innerText = playerHand.map(card => `${card.value}${card.suit}`).join(' ');
-}
-
-// Function to reveal dealer's hidden card
-function revealDealerHand() {
-    const dealerHandEl = document.getElementById('dealer-hand');
-    dealerHandEl.innerText = dealerHand.map(card => `${card.value}${card.suit}`).join(' ');
-}
-
-// Function to check for immediate blackjack
-function checkForBlackjack() {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerValue = calculateHandValue(dealerHand);
-    
-    if (playerValue === 21) {
-        endGame('Blackjack! You win.');
-    } else if (dealerValue === 21) {
-        revealDealerHand(); // Reveal the dealer's hidden card
-        endGame('Dealer has Blackjack! You lose.');
-    }
-}
-
-// Function for player hitting (drawing a card)
+// Function to handle hitting
 function hit() {
-    playerHand.push(drawCard());
-    updateHands();
-    
-    const playerValue = calculateHandValue(playerHand);
-    
-    if (playerValue > 21) {
-        endGame('Bust! You lose.');
+    playerHand.push(dealCard());
+    renderHands(); // Update the UI with the new hand
+    checkBust(); // Check if the player has busted
+}
+
+// Function to check if the player has busted
+function checkBust() {
+    const playerTotal = getHandTotal(playerHand);
+    if (playerTotal > 21) {
+        alert("You busted!"); // Alert the player
+        revealDealerHand(); // Reveal dealer's hand
     }
 }
 
-// Function for standing
+// Function to get the total value of a hand
+function getHandTotal(hand) {
+    return hand.reduce((sum, card) => sum + card, 0);
+}
+
+// Function to handle standing
 function stand() {
-    revealDealerHand(); // Reveal dealer's hidden card first
-
-    let dealerValue = calculateHandValue(dealerHand);
-    
-    // Dealer must hit if their hand value is less than 17
-    while (dealerValue < 17) {
-        dealerHand.push(drawCard());
-        dealerValue = calculateHandValue(dealerHand);
-    }
-    
-    updateHands();
-    determineWinner(); // Determine winner after dealer's final hand is set
+    revealDealerHand(); // Reveal dealer's hand
+    playDealerTurn(); // Dealer plays their turn
 }
 
-// Function for doubling down
-function doubleDown() {
-    if (!doubledDown && playerHand.length === 2) {
-        currentBet *= 2;
-        playerBalance -= currentBet / 2;
-        localStorage.setItem('balance', playerBalance);
-        document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
-        
-        hit(); // Receive one more card
-        stand(); // Then stand automatically
-        doubledDown = true;
+// Function to reveal dealer's hand
+function revealDealerHand() {
+    dealerHidden = false; // Set the flag to false
+    document.getElementById('dealer-hand').innerText = dealerHand.join(', ');
+}
+
+// Function for the dealer's turn
+function playDealerTurn() {
+    while (getHandTotal(dealerHand) < 17) { // Dealer hits until 17 or higher
+        dealerHand.push(dealCard());
     }
+    determineWinner(); // Determine the winner after dealer's turn
 }
 
 // Function to determine the winner
 function determineWinner() {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerValue = calculateHandValue(dealerHand);
+    const playerTotal = getHandTotal(playerHand);
+    const dealerTotal = getHandTotal(dealerHand);
 
-    let resultMessage;
-
-    if (playerValue > 21) {
-        resultMessage = 'Bust! You lose.';
-    } else if (dealerValue > 21 || playerValue > dealerValue) {
-        resultMessage = 'You win!';
-        playerBalance += currentBet * 2; // Win payout
-    } else if (playerValue === dealerValue) {
-        resultMessage = 'It\'s a tie!';
-        playerBalance += currentBet; // Return bet
+    if (dealerTotal > 21) {
+        alert("Dealer busts! You win!");
+        balance += betAmount * 2; // Player wins double the bet
+    } else if (playerTotal > dealerTotal) {
+        alert("You win!");
+        balance += betAmount * 2; // Player wins double the bet
+    } else if (playerTotal < dealerTotal) {
+        alert("Dealer wins!");
     } else {
-        resultMessage = 'You lose.';
+        alert("It's a tie!");
+        balance += betAmount; // Return the bet amount
     }
 
-    document.getElementById("balance").innerText = `$${playerBalance.toFixed(2)}`;
-    localStorage.setItem('balance', playerBalance); // Update balance
-    document.getElementById("result").innerText = resultMessage;
-    resetGame(); // Reset for next round
+    document.getElementById('balance').innerText = `$${balance}`; // Update balance on UI
 }
 
-// Function to reset the game
-function resetGame() {
-    currentBet = 0;
-    doubledDown = false; // Reset double down flag
-    playerHand = [];
-    dealerHand = [];
-    document.getElementById('bet-amount').value = ''; // Clear bet input
+// Function to handle double down (implement if desired)
+function doubleDown() {
+    // Logic for doubling down (optional)
 }
+
+// Function to go back to casino (you can implement this based on your layout)
+function goBack() {
+    // Logic to navigate back to the casino (not implemented here)
+}
+
+// Call the startGame function at the beginning to set up the game
+startGame();
